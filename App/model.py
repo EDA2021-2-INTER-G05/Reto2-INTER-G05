@@ -36,6 +36,31 @@ assert cf
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
+def initCatalog():
+    catalog = mp.newMap()
+    mp.put(catalog,"Artists",lt.newList("ARRAY_LIST"))
+    mp.put(catalog,"Artworks",lt.newList("ARRAY_LIST"))
+    mp.put(catalog,"Medium",mp.newMap())
+
+def addArtist(catalog,artist):
+    artista = mp.newMap()
+    mp.put(artista,"Const_id",int(artist["ConstituentID"]))
+    mp.put(artista,"Nombre",artist["DisplayName"])
+
+    lt.addLast(mp.get(catalog,"Artists")["value"],artista)
+
+def addArtwork(catalog,artwork):
+    artwork = mp.newMap()
+    mp.put(artwork,"id",artwork["ObjectID"])
+    mp.put(artwork,"Titulo",artwork["Title"])
+    mp.put(artwork,"Medio",artwork["Medium"])
+    mp.put(artwork,"Fecha",artwork["Date"])
+
+    lt.addLast(mp.get(catalog,"Artworks")["value"],artwork)
+
+    medio = mp.get(mp.get(catalog,"Medium"),artwork["Medium"])
+    if medio:
+        lt.addLast()
 
 # Construccion de modelos
 
