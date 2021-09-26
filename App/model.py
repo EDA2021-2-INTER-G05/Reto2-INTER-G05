@@ -41,26 +41,33 @@ def initCatalog():
     mp.put(catalog,"Artists",lt.newList("ARRAY_LIST"))
     mp.put(catalog,"Artworks",lt.newList("ARRAY_LIST"))
     mp.put(catalog,"Medium",mp.newMap())
+    return catalog
 
 def addArtist(catalog,artist):
     artista = mp.newMap()
     mp.put(artista,"Const_id",int(artist["ConstituentID"]))
     mp.put(artista,"Nombre",artist["DisplayName"])
 
+    prueba = mp.get(catalog,"Artists")
+
     lt.addLast(mp.get(catalog,"Artists")["value"],artista)
 
 def addArtwork(catalog,artwork):
-    artwork = mp.newMap()
-    mp.put(artwork,"id",artwork["ObjectID"])
-    mp.put(artwork,"Titulo",artwork["Title"])
-    mp.put(artwork,"Medio",artwork["Medium"])
-    mp.put(artwork,"Fecha",artwork["Date"])
+    obra = mp.newMap()
+    mp.put(obra,"id",artwork["ObjectID"])
+    mp.put(obra,"Titulo",artwork["Title"])
+    mp.put(obra,"Medio",artwork["Medium"])
+    mp.put(obra,"Fecha",artwork["Date"])
 
     lt.addLast(mp.get(catalog,"Artworks")["value"],artwork)
 
-    medio = mp.get(mp.get(catalog,"Medium"),artwork["Medium"])
+    medio = mp.get(mp.get(catalog,"Medium")["value"],mp.get(obra,"Medio")["value"])
     if medio:
-        lt.addLast()
+        lt.addLast(mp.get(mp.get(catalog,"Medium")["value"],medio["key"])["value"],obra)
+    else: 
+        mp.put(mp.get(catalog,"Medium")["value"],artwork["Medium"],lt.newList("ARRAY_LIST"))
+
+        
 
 # Construccion de modelos
 
@@ -73,3 +80,10 @@ def addArtwork(catalog,artwork):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
+def sort_date(artwork1,artwork2):
+    if mp.get(artwork1,"Fecha")["value"] < mp.get(artwork2,"Fecha")["value"]:
+        return True
+    else:
+        return False
+    

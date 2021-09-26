@@ -25,7 +25,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
-
+from DISClib.ADT import map as mp
 
 """
 La vista se encarga de la interacción con el usuario
@@ -33,6 +33,9 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+def print_n_obras_antigua(lista):
+    for obra in lt.iterator(lista):
+        print(mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"])
 
 def initCatalog():
     return controller.initCatalog()
@@ -43,7 +46,7 @@ def loadData(catalog):
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- n obras más antiguas de un medio")
 
 catalog = None
 
@@ -57,9 +60,14 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = initCatalog()
         loadData(catalog)
+        print("Se han cargado los datos exitosamente.")
 
     elif int(inputs[0]) == 2:
-        pass
+        medio = input("Seleccione el medio")
+        medio = medio.strip()
+        numero = int(input("Ingrese la cantidad de obras"))
+        lista = controller.obras_antiguas_medio(mp.get(catalog,"Medium")["value"],medio,numero)
+        print_n_obras_antigua(lista)
 
     else:
         sys.exit(0)

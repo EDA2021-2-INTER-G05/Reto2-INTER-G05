@@ -23,6 +23,9 @@
 import config as cf
 import model
 import csv
+from DISClib.Algorithms.Sorting import shellsort
+from DISClib.ADT import map as mp
+from DISClib.ADT import list as lt
 
 
 """
@@ -30,7 +33,7 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 def initCatalog():
-    catalog = model.newCatalog()
+    catalog = model.initCatalog()
     return catalog
 
 def loadData(catalog):
@@ -49,6 +52,23 @@ def loadArtworks(catalog):
     input_file = csv.DictReader(open(Artworks, encoding='utf-8'))
     for Artwork in input_file:
         model.addArtwork(catalog, Artwork)
+
+def obras_antiguas_medio(datos,medio,numero):
+    lista = mp.get(datos,medio)["value"]
+    shellsort.sort(lista,model.sort_date)
+
+    if lt.size(lista)<numero:
+        numero = lt.size(lista)
+    i = 1
+    retorno = lt.newList("ARRAY_LIST")
+    while True:
+        if mp.get(lt.getElement(lista,i),"Fecha")["value"] != "":
+            lt.addLast(retorno,lt.getElement(lista,i))
+            i += 1
+        if i == numero+1:
+            break
+    return retorno
+    
     
 
 # Inicialización del Catálogo de libros
