@@ -23,9 +23,7 @@
 import config as cf
 import model
 import csv
-from DISClib.Algorithms.Sorting import shellsort
-from DISClib.ADT import map as mp
-from DISClib.ADT import list as lt
+
 
 
 """
@@ -53,21 +51,15 @@ def loadArtworks(catalog):
     for Artwork in input_file:
         model.addArtwork(catalog, Artwork)
 
-def obras_antiguas_medio(datos,medio,numero):
-    lista = mp.get(datos,medio)["value"]
-    shellsort.sort(lista,model.sort_date)
+def obras_antiguas_medio(catalog,medio,numero):
 
-    if lt.size(lista)<numero:
-        numero = lt.size(lista)
-    i = 1
-    retorno = lt.newList("ARRAY_LIST")
-    while True:
-        if mp.get(lt.getElement(lista,i),"Fecha")["value"] != "":
-            lt.addLast(retorno,lt.getElement(lista,i))
-            i += 1
-        if i == numero+1:
-            break
-    return retorno
+    resultado = model.obras_antiguas_medio(catalog,medio,numero)
+
+    return resultado
+
+def numero_obras_nacionalidad(catalog,nacionalidad):
+    resultado = model.numero_obras_nacionalidad(catalog,nacionalidad)
+    return resultado
     
     
 

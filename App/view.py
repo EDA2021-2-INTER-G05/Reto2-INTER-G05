@@ -37,6 +37,9 @@ def print_n_obras_antigua(lista):
     for obra in lt.iterator(lista):
         print(mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"])
 
+def print_numero_obras_nacionaliad(resultado):
+    print("El número de obras con esa nacionalidad es: ",resultado)
+
 def initCatalog():
     return controller.initCatalog()
 
@@ -47,6 +50,7 @@ def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
     print("2- n obras más antiguas de un medio")
+    print("3 - Número total de obras de una nacionaliad")
 
 catalog = None
 
@@ -63,11 +67,16 @@ while True:
         print("Se han cargado los datos exitosamente.")
 
     elif int(inputs[0]) == 2:
-        medio = input("Seleccione el medio")
+        medio = input("Seleccione el medio: ")
         medio = medio.strip()
-        numero = int(input("Ingrese la cantidad de obras"))
-        lista = controller.obras_antiguas_medio(mp.get(catalog,"Medium")["value"],medio,numero)
+        numero = int(input("Ingrese la cantidad de obras: "))
+        lista = controller.obras_antiguas_medio(catalog,medio,numero)
         print_n_obras_antigua(lista)
+    
+    elif int(inputs[0]) == 3:
+        nacionalidad = input("Ingrese la nacionalidad: ").strip()
+        resultado = controller.numero_obras_nacionalidad(catalog,nacionalidad)
+        print_numero_obras_nacionaliad(resultado)
 
     else:
         sys.exit(0)
