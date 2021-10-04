@@ -39,16 +39,16 @@ Se define la estructura de un catálogo de videos. El catálogo tendrá dos list
 los mismos.
 """
 def initCatalog():
-    catalog = mp.newMap(numelements=2)
+    catalog = mp.newMap(numelements=8)
     mp.put(catalog,"Artists",mp.newMap(numelements=3))
-    mp.put(mp.get(catalog,"Artists")["value"],"id",mp.newMap())
-    mp.put(mp.get(catalog,"Artists")["value"],"Año",mp.newMap())
+    mp.put(mp.get(catalog,"Artists")["value"],"id",mp.newMap(maptype="CHAINING",loadfactor=4))
+    mp.put(mp.get(catalog,"Artists")["value"],"Año",mp.newMap(maptype="CHAINING",loadfactor=4))
 
     mp.put(catalog,"Artworks",mp.newMap(numelements=5))
-    mp.put(mp.get(catalog,"Artworks")["value"],"Año_ad",mp.newMap())
-    mp.put(mp.get(catalog,"Artworks")["value"],"Nacionalidad",mp.newMap())
-    mp.put(mp.get(catalog,"Artworks")["value"],"Departamento",mp.newMap())
-    mp.put(mp.get(catalog,"Artworks")["value"],"Medium",mp.newMap())
+    mp.put(mp.get(catalog,"Artworks")["value"],"Año_ad",mp.newMap(maptype="CHAINING",loadfactor=4))
+    mp.put(mp.get(catalog,"Artworks")["value"],"Nacionalidad",mp.newMap(maptype="CHAINING",loadfactor=4))
+    mp.put(mp.get(catalog,"Artworks")["value"],"Departamento",mp.newMap(maptype="CHAINING",loadfactor=4))
+    mp.put(mp.get(catalog,"Artworks")["value"],"Medium",mp.newMap(maptype="CHAINING",loadfactor=4))
 
     return catalog
 
@@ -104,7 +104,7 @@ def add_or_create_in_list(mapa,llave,valor):
     if mp.contains(mapa,llave):
         lt.addLast(mp.get(mapa,llave)["value"],valor)
     else:
-        mp.put(mapa,llave,lt.newList())
+        mp.put(mapa,llave,lt.newList(datastructure="ARRAY_LIST"))
         lt.addLast(mp.get(mapa,llave)["value"],valor)
 
 # Funciones para creacion de datos
@@ -114,14 +114,14 @@ def add_or_create_in_list(mapa,llave,valor):
 def obras_antiguas_medio(catalog,medio,numero):
 
     datos = mp.get(mp.get(catalog,"Artworks")["value"],"Medium")["value"]
-    lista = mp.get(datos,medio)["value"]
+    lista = mp.get(datos,medio)["value"].copy()
     shellsort.sort(lista,sort_date)
 
     if lt.size(lista)<numero:
         numero = lt.size(lista)
     i = 1
     retorno = lt.newList("ARRAY_LIST")
-    while True:
+    while lt.size(lista)!=0:
         if mp.get(lt.getElement(lista,i),"Fecha")["value"] != "":
             lt.addLast(retorno,lt.getElement(lista,i))
             i += 1
