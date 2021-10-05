@@ -71,6 +71,7 @@ def addArtwork(catalog,artwork):
     mp.put(obra,"Titulo",artwork["Title"])
     mp.put(obra,"Medio",artwork["Medium"])
     mp.put(obra,"Fecha",artwork["Date"])
+    mp.put(obra,"Dimensiones",artwork["Dimensions"])
 
     if artwork["DateAcquired"] != "":
         mp.put(obra,"Fecha_ad",datetime.strptime(artwork["DateAcquired"],"%Y-%m-%d"))
@@ -142,18 +143,17 @@ def obras_por_nacionalidad(catalog):
     lista_retorno = lt.newList("ARRAY_LLIST")
 
     for nacionalidad in lt.iterator(nacionalidades):
-        mapa = mp.newMap(3)
-        mp.put(mapa,"Nacionalidad",nacionalidad)
-        mp.put(mapa,"Conteo",lt.size(mp.get(datos,nacionalidad)["value"]))
-        mp.put(mapa,"Obras",mp.get(datos,nacionalidad)["value"].copy())
+        if nacionalidad != "":
+            mapa = mp.newMap(3)
+            mp.put(mapa,"Nacionalidad",nacionalidad)
+            mp.put(mapa,"Conteo",lt.size(mp.get(datos,nacionalidad)["value"]))
+            mp.put(mapa,"Obras",mp.get(datos,nacionalidad)["value"].copy())
 
-        lt.addLast(lista_retorno,mapa)
+            lt.addLast(lista_retorno,mapa)
     
-    shellsort.sort(lista_retorno,sort_nationalities)
+    shellsort.sort(lista_retorno,sort_nationalities_by_artworks)
+    return lista_retorno
 
-
-
-    pass
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -167,6 +167,12 @@ def sort_date(artwork1,artwork2):
 
 def sort_years(año1,año2):
     if año1<año2:
+        return True
+    else:
+        return False
+
+def sort_nationalities_by_artworks(nationality1,nationality2):
+    if mp.get(nationality1,"Conteo")["value"] > mp.get(nationality2,"Conteo")["value"]:
         return True
     else:
         return False
@@ -202,6 +208,8 @@ def binary_search(arr, low, high, x):
     else:
         # Element is not present in the array
         return -1
+
+
 
 
     

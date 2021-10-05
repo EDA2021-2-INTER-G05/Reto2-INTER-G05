@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from prettytable.prettytable import ALL, HEADER
 import config as cf
 import sys
 import controller
@@ -35,6 +36,15 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+
+def obtener_nombres_artistas(obra):
+    artistas = mp.get(obra,"Artistas")["value"]
+    lista = []
+    for artista in lt.iterator(artistas):
+        lista.append(mp.get(artista,"Nombre")["value"])
+    return lista
+
+
 
 def print_artistas_cronologico(resultado,tiempo):
     print("Hay un total de " + str(lt.size(resultado)) + " artistas en el rango.")
@@ -56,7 +66,33 @@ def print_artistas_cronologico(resultado,tiempo):
 
 
 def print_numero_obras_nacionaliad(resultado,tiempo):
-    print("El número de obras con esa nacionalidad es: ",resultado)
+
+    tabla = PrettyTable()
+    tabla.field_names=["Nacionalidad","Número de obras"]
+    for i in range(1,10):
+        nacionalidad = lt.getElement(resultado,i)
+        tabla.add_row([mp.get(nacionalidad,"Nacionalidad")["value"],mp.get(nacionalidad,"Conteo")["value"]])
+
+    print("El top 10 de nacionalidades con más obras es:")
+    print(tabla)
+
+    print("Muestra de las lista de la nacionalidad con mayor cantidad de obras:")
+    tabla2 =PrettyTable(hrules = ALL)
+    tabla2.field_names = ["Titulo","Artista(s)","Fecha","Medio","Dimensiones"]
+    tabla2.max_width = 47
+    
+    lista = mp.get(lt.getElement(resultado,1),"Obras")["value"]
+    for i in range(1,4):
+        obra = lt.getElement(lista,i)
+        nombre_artistas = obtener_nombres_artistas(obra)
+        tabla2.add_row([mp.get(obra,"Titulo")["value"],nombre_artistas,mp.get(obra,"Fecha")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Dimensiones")["value"]])
+
+    for i in range(lt.size(lista)-3,lt.size(lista)):
+        obra = lt.getElement(lista,i)
+        nombre_artistas = obtener_nombres_artistas(obra)
+        tabla2.add_row([mp.get(obra,"Titulo")["value"],nombre_artistas,mp.get(obra,"Fecha")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Dimensiones")["value"]])
+    
+    print(tabla2)
     print("Tiempo requerido: " + str(tiempo) + " msg")
 
 def initCatalog():
@@ -94,6 +130,7 @@ while True:
     elif int(inputs[0]) == 1:
         anio_i = int(input("Ingrese el año inicial: "))
         anio_f = int(input("Ingrese el año final: "))
+        print("Cargando información...")
         start_time = time.process_time()
         resultado = controller.artistas_cronologico(catalog,anio_i,anio_f)
         stop_time = time.process_time()
@@ -113,8 +150,12 @@ while True:
         print("Ya que estoy solo en el grupo este requerimiento no fue implementado")
 
     elif int(inputs[0]) == 4:
+        print("Cargando información...")
+        start_time = time.process_time()
         resultado = controller.obras_por_nacionalidad(catalog)
-        pass
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print_numero_obras_nacionaliad(resultado,elapsed_time_mseg)
 
     else:
         sys.exit(0)
