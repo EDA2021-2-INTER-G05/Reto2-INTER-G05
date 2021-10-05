@@ -31,7 +31,7 @@ from DISClib.ADT import map as mp
 assert cf
 from datetime import datetime 
 from DISClib.Algorithms.Sorting import shellsort
-from DISClib.Algorithms.Sorting import insertionsort
+
 
 
 """
@@ -116,7 +116,7 @@ def add_or_create_in_list(mapa,llave,valor):
 def artistas_cronologico(catalog,anio_i,anio_f):
     datos = mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"]
     años = mp.keySet(datos)
-    insertionsort.sort(años,sort_years)
+    shellsort.sort(años,sort_years)
 
     inicio = binary_search(años,0,lt.size(años),anio_i)
     while inicio == -1 and anio_i <= anio_f and anio_i < lt.lastElement(años):
@@ -135,9 +135,25 @@ def artistas_cronologico(catalog,anio_i,anio_f):
 
     return lista_retorno
         
-def numero_obras_nacionalidad(catalog,nacionalidad):
-    numero = lt.size(mp.get(mp.get(mp.get(catalog,"Artworks")["value"],"Nacionalidad")["value"],nacionalidad)["value"])
-    return numero
+def obras_por_nacionalidad(catalog):
+    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Nacionalidad")["value"]
+    nacionalidades = mp.keySet(datos)
+
+    lista_retorno = lt.newList("ARRAY_LLIST")
+
+    for nacionalidad in lt.iterator(nacionalidades):
+        mapa = mp.newMap(3)
+        mp.put(mapa,"Nacionalidad",nacionalidad)
+        mp.put(mapa,"Conteo",lt.size(mp.get(datos,nacionalidad)["value"]))
+        mp.put(mapa,"Obras",mp.get(datos,nacionalidad)["value"].copy())
+
+        lt.addLast(lista_retorno,mapa)
+    
+    shellsort.sort(lista_retorno,sort_nationalities)
+
+
+
+    pass
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

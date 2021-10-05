@@ -69,7 +69,9 @@ def printMenu():
     print("Bienvenido")
     print("0- Cargar información en el catálogo")
     print("1- Listar cronnológicamente artistas")
-    print("2 - Número total de obras de una nacionaliad")
+    print("2- Listar cronológicamente las adquisiciones")
+    print("4- Clasificar obras por nacionalidad de sus creadores")
+
 
 catalog = None
 
@@ -106,6 +108,13 @@ while True:
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print_numero_obras_nacionaliad(resultado,elapsed_time_mseg)
+
+    elif int(inputs[0]) == 3:
+        print("Ya que estoy solo en el grupo este requerimiento no fue implementado")
+
+    elif int(inputs[0]) == 4:
+        resultado = controller.obras_por_nacionalidad(catalog)
+        pass
 
     else:
         sys.exit(0)

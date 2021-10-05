@@ -56,8 +56,8 @@ def artistas_cronologico(catalog,anio_i,anio_f):
     resultado = model.artistas_cronologico(catalog,anio_i,anio_f)
     return resultado
 
-def numero_obras_nacionalidad(catalog,nacionalidad):
-    resultado = model.numero_obras_nacionalidad(catalog,nacionalidad)
+def obras_por_nacionalidad(catalog):
+    resultado = model.obras_por_nacionalidad(catalog)
     return resultado
     
     
