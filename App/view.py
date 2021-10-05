@@ -29,6 +29,7 @@ assert cf
 from DISClib.ADT import map as mp
 import time
 from prettytable import PrettyTable
+from datetime import datetime
 
 """
 La vista se encarga de la interacción con el usuario
@@ -139,12 +140,18 @@ while True:
 
     
     elif int(inputs[0]) == 2:
-        nacionalidad = input("Ingrese la nacionalidad: ").strip()
+        fecha_i = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+        fecha_i = fecha_i.strip()
+        fecha_i = datetime.strptime(fecha_i,"%Y-%m-%d")
+        fecha_f = input("Ingrese la fecha final (YYYY-MM-DD): ")
+        fecha_f = fecha_f.strip()
+        fecha_f = datetime.strptime(fecha_f,"%Y-%m-%d")
+        print("Cargando información de los archivos...")
         start_time = time.process_time()
-        resultado = controller.numero_obras_nacionalidad(catalog,nacionalidad)
+        resultado = controller.adquisiciones_cronologico(fecha_i,fecha_f,catalog)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
-        print_numero_obras_nacionaliad(resultado,elapsed_time_mseg)
+        printAdquisicionesCronologicas(resultado[0],resultado[1],elapsed_time_mseg)
 
     elif int(inputs[0]) == 3:
         print("Ya que estoy solo en el grupo este requerimiento no fue implementado")

@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 assert cf
 from datetime import datetime 
 from DISClib.Algorithms.Sorting import shellsort
+from datetime import timedelta
 
 
 
@@ -154,6 +155,19 @@ def obras_por_nacionalidad(catalog):
     shellsort.sort(lista_retorno,sort_nationalities_by_artworks)
     return lista_retorno
 
+def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
+    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Año_ad")["value"]
+    años = mp.keySet(datos)
+    shellsort.sort(años,sort_years)
+
+    inicio = binary_search(años,0,lt.size(años),fecha_i.year())
+    while inicio == -1 and fecha_i.year() <= fecha_f.year() and fecha_i.year() <= lt.lastElement(años).year():
+        fecha_i += timedelta(years=1)
+        inicio = binary_search(años,0,lt.size(años),fecha_i.year())
+
+    i = inicio
+ 
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -167,6 +181,12 @@ def sort_date(artwork1,artwork2):
 
 def sort_years(año1,año2):
     if año1<año2:
+        return True
+    else:
+        return False
+
+def sort_years_datetime(año1,año2):
+    if año1.year()<año2.year():
         return True
     else:
         return False
