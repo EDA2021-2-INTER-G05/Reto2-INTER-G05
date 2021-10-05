@@ -151,7 +151,8 @@ while True:
         resultado = controller.adquisiciones_cronologico(fecha_i,fecha_f,catalog)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
-        printAdquisicionesCronologicas(resultado[0],resultado[1],elapsed_time_mseg)
+        print(elapsed_time_mseg)
+        #printAdquisicionesCronologicas(resultado[0],resultado[1],elapsed_time_mseg)
 
     elif int(inputs[0]) == 3:
         print("Ya que estoy solo en el grupo este requerimiento no fue implementado")

@@ -118,22 +118,20 @@ def add_or_create_in_list(mapa,llave,valor):
 def artistas_cronologico(catalog,anio_i,anio_f):
     datos = mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"]
     años = mp.keySet(datos)
-    shellsort.sort(años,sort_years)
 
-    inicio = binary_search(años,0,lt.size(años),anio_i)
-    while inicio == -1 and anio_i <= anio_f and anio_i < lt.lastElement(años):
-        anio_i = anio_i+1
-        inicio = binary_search(años,0,lt.size(años),anio_i)
+    años_rango = lt.newList("ARRAY_LIST")
+    for año in lt.iterator(años):
+        if año >= anio_i and año <= anio_f:
+            lt.addLast(años_rango,año)
     
-    i = inicio
-    lista_retorno = lt.newList("ARRAY_LIST")
-    while lt.getElement(años,i) <= anio_f and lt.getElement(años,i) <= lt.lastElement(años):
-        año = lt.getElement(años,i)
-        lista = mp.get(datos,año)["value"]
-        for artista in lt.iterator(lista):
-            lt.addLast(lista_retorno,artista)
+    shellsort.sort(años_rango,sort_years)
 
-        i += 1
+    lista_retorno = lt.newList("ARRAY_LIST")
+
+    for año in lt.iterator(años_rango):
+        lista_año = mp.get(datos,año)["value"]
+        for artista in lt.iterator(lista_año):
+            lt.addLast(lista_retorno,artista)
 
     return lista_retorno
         
@@ -156,17 +154,25 @@ def obras_por_nacionalidad(catalog):
     return lista_retorno
 
 def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
-    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Año_ad")["value"]
+    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Año_ad")["value"].copy()
     años = mp.keySet(datos)
-    shellsort.sort(años,sort_years)
 
-    inicio = binary_search(años,0,lt.size(años),fecha_i.year())
-    while inicio == -1 and fecha_i.year() <= fecha_f.year() and fecha_i.year() <= lt.lastElement(años).year():
-        fecha_i += timedelta(years=1)
-        inicio = binary_search(años,0,lt.size(años),fecha_i.year())
+    rango_años = lt.newList("ARRAY_LIST")
+    for año in lt.iterator(años):
+        if año >= fecha_i.year and año <= fecha_f.year:
+            lt.addLast(rango_años,año)
+    
+    shellsort.sort(rango_años,sort_years)
 
-    i = inicio
- 
+    lista_retorno = lt.newList("ARRAY_LIST")
+
+    for año in rango_años:
+        lista_año = mp.get(datos,año)["value"]
+        shellsort.sort(lista_año,)
+        for obra in lista_año:
+            lt.addLast(lista_retorno,obra)
+
+    return lista_retorno
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
