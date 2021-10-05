@@ -27,6 +27,7 @@ from DISClib.ADT import list as lt
 assert cf
 from DISClib.ADT import map as mp
 import time
+from prettytable import PrettyTable
 
 """
 La vista se encarga de la interacción con el usuario
@@ -34,11 +35,25 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
-def print_n_obras_antigua(lista,tiempo):
-    for obra in lt.iterator(lista):
-        print(mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"])
+
+def print_artistas_cronologico(resultado,tiempo):
+    print("Hay un total de " + str(lt.size(resultado)) + " artistas en el rango.")
+    print("Se muestra a continuación los 3 primeros y los 3 últimos:")
+
+    tabla = PrettyTable()
+    tabla.field_names = ["Nombre","Año de nacimiento","Año de fallecimiento","Nacionaliad","Genero"]
     
+    for i in range(1,4):
+        artista = lt.getElement(resultado,i)
+        tabla.add_row([mp.get(artista,"Nombre")["value"],mp.get(artista,"Año")["value"],mp.get(artista,"Fecha_falle")["value"],mp.get(artista,"Nacionalidad")["value"],mp.get(artista,"Genero")["value"]])
+    
+    for i in range(lt.size(resultado)-3,lt.size(resultado)):
+        artista = lt.getElement(resultado,i)
+        tabla.add_row([mp.get(artista,"Nombre")["value"],mp.get(artista,"Año")["value"],mp.get(artista,"Fecha_falle")["value"],mp.get(artista,"Nacionalidad")["value"],mp.get(artista,"Genero")["value"]])
+
+    print(tabla)
     print("Tiempo requerido: " + str(tiempo) + " msg")
+
 
 def print_numero_obras_nacionaliad(resultado,tiempo):
     print("El número de obras con esa nacionalidad es: ",resultado)
@@ -53,7 +68,7 @@ def loadData(catalog):
 def printMenu():
     print("Bienvenido")
     print("0- Cargar información en el catálogo")
-    print("1- n obras más antiguas de un medio")
+    print("1- Listar cronnológicamente artistas")
     print("2 - Número total de obras de una nacionaliad")
 
 catalog = None
@@ -75,14 +90,14 @@ while True:
         print("Tiempo requerido: "+ str(elapsed_time_mseg) + " mseg")
 
     elif int(inputs[0]) == 1:
-        medio = input("Seleccione el medio: ")
-        medio = medio.strip()
-        numero = int(input("Ingrese la cantidad de obras: "))
+        anio_i = int(input("Ingrese el año inicial: "))
+        anio_f = int(input("Ingrese el año final: "))
         start_time = time.process_time()
-        lista = controller.obras_antiguas_medio(catalog,medio,numero)
+        resultado = controller.artistas_cronologico(catalog,anio_i,anio_f)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
-        print_n_obras_antigua(lista,elapsed_time_mseg)
+        print_artistas_cronologico(resultado,elapsed_time_mseg)
+
     
     elif int(inputs[0]) == 2:
         nacionalidad = input("Ingrese la nacionalidad: ").strip()

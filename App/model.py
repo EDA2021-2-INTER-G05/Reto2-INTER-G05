@@ -28,11 +28,11 @@
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
-from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
 assert cf
 from datetime import datetime 
 from DISClib.Algorithms.Sorting import shellsort
+from DISClib.Algorithms.Sorting import insertionsort
+
 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
@@ -58,6 +58,8 @@ def addArtist(catalog,artist):
     mp.put(artista,"Nombre",artist["DisplayName"])
     mp.put(artista,"Año",int(artist["BeginDate"]))
     mp.put(artista,"Nacionalidad",artist["Nationality"].strip())
+    mp.put(artista,"Fecha_falle",artist["EndDate"])
+    mp.put(artista,"Genero",artist["Gender"])
 
     mp.put(mp.get(mp.get(catalog,"Artists")["value"],"id")["value"],mp.get(artista,"Const_id")["value"],artista)
     add_or_create_in_list(mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"],mp.get(artista,"Año")["value"],artista)
@@ -111,24 +113,28 @@ def add_or_create_in_list(mapa,llave,valor):
 
 # Funciones de consulta
 
-def obras_antiguas_medio(catalog,medio,numero):
+def artistas_cronologico(catalog,anio_i,anio_f):
+    datos = mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"]
+    años = mp.keySet(datos)
+    insertionsort.sort(años,sort_years)
 
-    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Medium")["value"]
-    lista = mp.get(datos,medio)["value"].copy()
-    shellsort.sort(lista,sort_date)
+    inicio = binary_search(años,0,lt.size(años),anio_i)
+    while inicio == -1 and anio_i <= anio_f and anio_i < lt.lastElement(años):
+        anio_i = anio_i+1
+        inicio = binary_search(años,0,lt.size(años),anio_i)
+    
+    i = inicio
+    lista_retorno = lt.newList("ARRAY_LIST")
+    while lt.getElement(años,i) <= anio_f and lt.getElement(años,i) <= lt.lastElement(años):
+        año = lt.getElement(años,i)
+        lista = mp.get(datos,año)["value"]
+        for artista in lt.iterator(lista):
+            lt.addLast(lista_retorno,artista)
 
-    if lt.size(lista)<numero:
-        numero = lt.size(lista)
-    i = 1
-    retorno = lt.newList("ARRAY_LIST")
-    while lt.size(lista)!=0:
-        if mp.get(lt.getElement(lista,i),"Fecha")["value"] != "":
-            lt.addLast(retorno,lt.getElement(lista,i))
-            i += 1
-        if i == numero+1:
-            break
-    return retorno
+        i += 1
 
+    return lista_retorno
+        
 def numero_obras_nacionalidad(catalog,nacionalidad):
     numero = lt.size(mp.get(mp.get(mp.get(catalog,"Artworks")["value"],"Nacionalidad")["value"],nacionalidad)["value"])
     return numero
@@ -142,7 +148,44 @@ def sort_date(artwork1,artwork2):
         return True
     else:
         return False
+
+def sort_years(año1,año2):
+    if año1<año2:
+        return True
+    else:
+        return False
     
+#Funciones de busqueda
+
+def binary_search(arr, low, high, x):
+    #Tomado y modificado de https://www.geeksforgeeks.org/python-program-for-binary-search/
+    #Está pensada solamente para buscar el inicio de un rango.
+ 
+    # Check base case
+    if high >= low:
+ 
+        mid = (high + low) // 2
+ 
+        # If element is present at the middle itself
+        prueba = lt.getElement(arr,mid)
+        if lt.getElement(arr,mid) == x:
+            #Revisar si hay duplicados
+            while lt.getElement(arr,mid) == lt.getElement(arr,mid-1):
+                mid -= 1
+            return mid
+ 
+        # If element is smaller than mid, then it can only
+        # be present in left subarray
+        elif lt.getElement(arr,mid) > x:
+            return binary_search(arr, low, mid - 1, x)
+ 
+        # Else the element can only be present in right subarray
+        else:
+            return binary_search(arr, mid + 1, high, x)
+ 
+    else:
+        # Element is not present in the array
+        return -1
 
 
     

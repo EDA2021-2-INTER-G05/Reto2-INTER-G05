@@ -51,10 +51,9 @@ def loadArtworks(catalog):
     for Artwork in input_file:
         model.addArtwork(catalog, Artwork)
 
-def obras_antiguas_medio(catalog,medio,numero):
+def artistas_cronologico(catalog,anio_i,anio_f):
 
-    resultado = model.obras_antiguas_medio(catalog,medio,numero)
-
+    resultado = model.artistas_cronologico(catalog,anio_i,anio_f)
     return resultado
 
 def numero_obras_nacionalidad(catalog,nacionalidad):
