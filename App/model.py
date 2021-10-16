@@ -159,7 +159,7 @@ def obras_por_nacionalidad(catalog):
     return lista_retorno
 
 def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
-    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Año_ad")["value"].copy()
+    datos = mp.get(mp.get(catalog,"Artworks")["value"],"Año_ad")["value"]
     años = mp.keySet(datos)
 
     rango_años = lt.newList("ARRAY_LIST")
@@ -172,7 +172,7 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
     lista_retorno = lt.newList("ARRAY_LIST")
     conteo_compras = 0
 
-    if lt.size(lista_retorno) <= 8:
+    if lt.size(rango_años) <= 8:
         for año in lt.iterator(rango_años):
             lista_año = mp.get(datos,año)["value"]
             shellsort.sort(lista_año,sort_ad_date)
@@ -185,16 +185,20 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
     else:
         for i in range(1,lt.size(rango_años)+1):
             if i in range(1,5) or i in range(lt.size(rango_años)-3,lt.size(rango_años)+1):
+                año = lt.getElement(rango_años,i)
                 lista_año = mp.get(datos,año)["value"]
-                shellsort.sort(lista_año,sort_years)
+                shellsort.sort(lista_año,sort_ad_date)
                 for obra in lt.iterator(lista_año):
                     if mp.get(obra,"Fecha_ad")["value"] >= fecha_i and mp.get(obra,"Fecha_ad")["value"] <= fecha_f:
                         lt.addLast(lista_retorno,obra)
                         if mp.get(obra,"Compra")["value"]==True:
                             conteo_compras += 1
             else:
+                año = lt.getElement(rango_años,i)
+                lista_año = mp.get(datos,año)["value"]
                 for obra in lt.iterator(lista_año):
-                    lt.addLast(lista_retorno)
+                    año = lt.getElement(rango_años,i)
+                    lt.addLast(lista_retorno,obra)
                     if mp.get(obra,"Compra")["value"]==True:
                         conteo_compras += 1
             
