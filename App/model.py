@@ -79,6 +79,11 @@ def addArtwork(catalog,artwork):
     else:
         mp.put(obra,"Fecha_ad",datetime.strptime("0001-01-01","%Y-%m-%d"))
 
+    if artwork["CreditLine"] == "Purchase":
+        mp.put(obra,"Compra",True)
+    else:
+        mp.put(obra,"Compra",False)
+
     artistas = artwork["ConstituentID"]
     artistas = artistas.replace("[","")
     artistas = artistas.replace("]","")
@@ -165,14 +170,35 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
     shellsort.sort(rango_años,sort_years)
 
     lista_retorno = lt.newList("ARRAY_LIST")
+    conteo_compras = 0
 
-    for año in rango_años:
-        lista_año = mp.get(datos,año)["value"]
-        shellsort.sort(lista_año,)
-        for obra in lista_año:
-            lt.addLast(lista_retorno,obra)
-
-    return lista_retorno
+    if lt.size(lista_retorno) <= 8:
+        for año in lt.iterator(rango_años):
+            lista_año = mp.get(datos,año)["value"]
+            shellsort.sort(lista_año,sort_ad_date)
+            for obra in lt.iterator(lista_año):
+                if mp.get(obra,"Fecha_ad")["value"] >= fecha_i and mp.get(obra,"Fecha_ad")["value"] <= fecha_f:
+                    lt.addLast(lista_retorno,obra)
+                    if mp.get(obra,"Compra")["value"]==True:
+                        conteo_compras += 1
+    
+    else:
+        for i in range(1,lt.size(rango_años)+1):
+            if i in range(1,5) or i in range(lt.size(rango_años)-3,lt.size(rango_años)+1):
+                lista_año = mp.get(datos,año)["value"]
+                shellsort.sort(lista_año,sort_years)
+                for obra in lt.iterator(lista_año):
+                    if mp.get(obra,"Fecha_ad")["value"] >= fecha_i and mp.get(obra,"Fecha_ad")["value"] <= fecha_f:
+                        lt.addLast(lista_retorno,obra)
+                        if mp.get(obra,"Compra")["value"]==True:
+                            conteo_compras += 1
+            else:
+                for obra in lt.iterator(lista_año):
+                    lt.addLast(lista_retorno)
+                    if mp.get(obra,"Compra")["value"]==True:
+                        conteo_compras += 1
+            
+    return lista_retorno,conteo_compras
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -181,6 +207,12 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
 
 def sort_date(artwork1,artwork2):
     if mp.get(artwork1,"Fecha")["value"] < mp.get(artwork2,"Fecha")["value"]:
+        return True
+    else:
+        return False
+
+def sort_ad_date(artwork1,artwork2):
+    if mp.get(artwork1,"Fecha_ad")["value"] < mp.get(artwork2,"Fecha_ad")["value"]:
         return True
     else:
         return False

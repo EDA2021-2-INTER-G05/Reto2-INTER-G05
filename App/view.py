@@ -58,7 +58,7 @@ def print_artistas_cronologico(resultado,tiempo):
         artista = lt.getElement(resultado,i)
         tabla.add_row([mp.get(artista,"Nombre")["value"],mp.get(artista,"Año")["value"],mp.get(artista,"Fecha_falle")["value"],mp.get(artista,"Nacionalidad")["value"],mp.get(artista,"Genero")["value"]])
     
-    for i in range(lt.size(resultado)-3,lt.size(resultado)):
+    for i in range(lt.size(resultado)-2,lt.size(resultado)+1):
         artista = lt.getElement(resultado,i)
         tabla.add_row([mp.get(artista,"Nombre")["value"],mp.get(artista,"Año")["value"],mp.get(artista,"Fecha_falle")["value"],mp.get(artista,"Nacionalidad")["value"],mp.get(artista,"Genero")["value"]])
 
@@ -70,7 +70,7 @@ def print_numero_obras_nacionaliad(resultado,tiempo):
 
     tabla = PrettyTable()
     tabla.field_names=["Nacionalidad","Número de obras"]
-    for i in range(1,10):
+    for i in range(1,11):
         nacionalidad = lt.getElement(resultado,i)
         tabla.add_row([mp.get(nacionalidad,"Nacionalidad")["value"],mp.get(nacionalidad,"Conteo")["value"]])
 
@@ -80,7 +80,7 @@ def print_numero_obras_nacionaliad(resultado,tiempo):
     print("Muestra de las lista de la nacionalidad con mayor cantidad de obras:")
     tabla2 =PrettyTable(hrules = ALL)
     tabla2.field_names = ["Titulo","Artista(s)","Fecha","Medio","Dimensiones"]
-    tabla2.max_width = 47
+    tabla2.max_width = 40
     
     lista = mp.get(lt.getElement(resultado,1),"Obras")["value"]
     for i in range(1,4):
@@ -88,10 +88,31 @@ def print_numero_obras_nacionaliad(resultado,tiempo):
         nombre_artistas = obtener_nombres_artistas(obra)
         tabla2.add_row([mp.get(obra,"Titulo")["value"],nombre_artistas,mp.get(obra,"Fecha")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Dimensiones")["value"]])
 
-    for i in range(lt.size(lista)-3,lt.size(lista)):
+    for i in range(lt.size(lista)-2,lt.size(lista)+1):
         obra = lt.getElement(lista,i)
         nombre_artistas = obtener_nombres_artistas(obra)
         tabla2.add_row([mp.get(obra,"Titulo")["value"],nombre_artistas,mp.get(obra,"Fecha")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Dimensiones")["value"]])
+    
+    print(tabla2)
+    print("Tiempo requerido: " + str(tiempo) + " msg")
+
+def printAdquisicionesCronologicas(lista,conteo,tiempo):
+    print("La cantidad de obras en el rango es " + str(lt.size(lista)))
+    print("De estas, " + str(conteo) + " fueron compradas.")
+    tabla2 =PrettyTable(hrules = ALL)
+
+    tabla2.field_names = ["Titulo","Artista(s)","Fecha","Fecha ad","Medio","Dimensiones"]
+    tabla2.max_width = 25
+    
+    for i in range(1,4):
+        obra = lt.getElement(lista,i)
+        nombre_artistas = obtener_nombres_artistas(obra)
+        tabla2.add_row([mp.get(obra,"Titulo")["value"],nombre_artistas,mp.get(obra,"Fecha")["value"],mp.get(obra,"Fecha_ad")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Dimensiones")["value"]])
+
+    for i in range(lt.size(lista)-2,lt.size(lista)+1):
+        obra = lt.getElement(lista,i)
+        nombre_artistas = obtener_nombres_artistas(obra)
+        tabla2.add_row([mp.get(obra,"Titulo")["value"],nombre_artistas,mp.get(obra,"Fecha")["value"],mp.get(obra,"Fecha_ad")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Dimensiones")["value"]])
     
     print(tabla2)
     print("Tiempo requerido: " + str(tiempo) + " msg")
@@ -151,8 +172,7 @@ while True:
         resultado = controller.adquisiciones_cronologico(fecha_i,fecha_f,catalog)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
-        print(elapsed_time_mseg)
-        #printAdquisicionesCronologicas(resultado[0],resultado[1],elapsed_time_mseg)
+        printAdquisicionesCronologicas(resultado[0],resultado[1],elapsed_time_mseg)
 
     elif int(inputs[0]) == 3:
         print("Ya que estoy solo en el grupo este requerimiento no fue implementado")
