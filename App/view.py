@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from prettytable import prettytable
 from prettytable.prettytable import ALL, HEADER
 import config as cf
 import sys
@@ -102,7 +103,7 @@ def printAdquisicionesCronologicas(lista,conteo,tiempo):
     tabla2 =PrettyTable(hrules = ALL)
 
     tabla2.field_names = ["Titulo","Artista(s)","Fecha","Fecha ad","Medio","Dimensiones"]
-    tabla2.max_width = 25
+    tabla2.max_width = 30
     
     for i in range(1,4):
         obra = lt.getElement(lista,i)
@@ -116,6 +117,29 @@ def printAdquisicionesCronologicas(lista,conteo,tiempo):
     
     print(tabla2)
     print("Tiempo requerido: " + str(tiempo) + " msg")
+
+def print_artistas_prolificos(resultado,tiempo):
+    tabla = PrettyTable()
+    tabla.field_names =["Nombre","Fecha Nacimiento","Genero","Total Obras","Total Técnicas","Técnica más utilizada"]
+    for diccionario in lt.iterator(resultado):
+        artista = mp.get(diccionario,"Artista")["value"]
+        tabla.add_row([mp.get(artista,"Nombre")["value"],mp.get(artista,"Año")["value"],mp.get(artista,"Genero")["value"],mp.get(diccionario,"Total obras")["value"],mp.get(diccionario,"Numero de medios")["value"],mp.get(diccionario,"Mayor medio")["value"]])
+    print("Los artistas más prolificos del museo en ese rango son los siguientes: ")
+    print(tabla)
+
+    tabla2= PrettyTable(hrules = ALL)
+    tabla2.field_names = ["Titulo","Fecha","Fecha adquisición","Medio","Departamento","Clasificación","Dimensiones"]
+    mayor_medio = mp.get(lt.getElement(resultado,1),"Mayor medio")["value"]
+    lista_obras = mp.get(mp.get(mp.get(lt.getElement(resultado,1),"Artista")["value"],"Obras")["value"],mayor_medio)["value"]
+    for i in range(1,6):
+        obra = lt.getElement(lista_obras,i)
+        tabla2.add_row([mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"],mp.get(obra,"Fecha_ad")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Departamento")["value"],mp.get(obra,"Clasificación")["value"],mp.get(obra,"Dimensiones")["value"]])
+    print("Las 5 primeras obras del medio más utilizado del artista más prolífico son las siguientes: ")
+    tabla2.max_width = 25
+    print(tabla2)
+    print("Tiempo requerido: " + str(tiempo) + " msg")
+
+
 
 def initCatalog():
     return controller.initCatalog()
@@ -187,18 +211,15 @@ while True:
         print_numero_obras_nacionaliad(resultado,elapsed_time_mseg)
 
     elif int(inputs[0]) == 6:
-        anio_i = int("Ingrese el año inicial: ")
-        anio_f = int("Ingrese el año final: ")
+        anio_i = int(input("Ingrese el año inicial: "))
+        anio_f = int(input("Ingrese el año final: "))
         numero = int(input("Ingrese cúantos de los artístas más prolíficos desea ver: "))
         print("Cargando información de los archivos...")
         start_time = time.process_time()
-        resulado = controller.artistas_prolificos(catalog,anio_i,anio_f,numero)
+        resultado = controller.artistas_prolificos(catalog,anio_i,anio_f,numero)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
-        print(elapsed_time_mseg)
-
-    
-
+        print_artistas_prolificos(resultado,elapsed_time_mseg)
 
     else:
         sys.exit(0)

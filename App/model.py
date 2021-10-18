@@ -68,16 +68,21 @@ def addArtist(catalog,artist):
 
     mp.put(mp.get(mp.get(catalog,"Artists")["value"],"id")["value"],mp.get(artista,"Const_id")["value"],artista)
     add_or_create_in_list(mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"],mp.get(artista,"Año")["value"],artista)
-    lt.addLast(mp.get(mp.get(catalog,"Artists")["value"],"Lista"),artista)
 
 
 def addArtwork(catalog,artwork):
     obra = mp.newMap(numelements=20)
     mp.put(obra,"id",artwork["ObjectID"])
     mp.put(obra,"Titulo",artwork["Title"])
-    mp.put(obra,"Medio",artwork["Medium"])
     mp.put(obra,"Fecha",artwork["Date"])
     mp.put(obra,"Dimensiones",artwork["Dimensions"])
+    mp.put(obra,"Clasificación",artwork["Classification"])
+    mp.put(obra,"Departamento",artwork["Department"])
+
+    if artwork["Medium"] == "":
+        mp.put(obra,"Medio","*No especificado*")
+    else:
+        mp.put(obra,"Medio",artwork["Medium"])
 
     if artwork["DateAcquired"] != "":
         mp.put(obra,"Fecha_ad",datetime.strptime(artwork["DateAcquired"],"%Y-%m-%d"))
@@ -214,18 +219,18 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
 
 
 def artistas_prolificos(catalog,anio_i,anio_f,numero):
-    datos = mp.get(mp.get(catalog,"Artists")["value"],"Años")["value"]
+    datos = mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"]
     años = mp.keySet(datos)
 
     rango_años = lt.newList("ARRAY_LIST")
     for año in lt.iterator(años):
-        if año <= anio_i and año >= anio_f:
+        if año >= anio_i and año <= anio_f:
             lt.addLast(rango_años,año)
+    
+    lista = lt.newList("ARRAY_LIST")
 
     for año in lt.iterator(rango_años):
         lista_año = mp.get(datos,año)["value"]
-
-        lista = lt.newList("ARRAY_LIST")
         for artista in lt.iterator(lista_año):
             diccionario = mp.newMap(5,loadfactor=4)
             mp.put(diccionario,"Artista",artista)
@@ -240,11 +245,17 @@ def artistas_prolificos(catalog,anio_i,anio_f,numero):
                     medio_prueba = mp.get(mp.get(artista,"Obras")["value"],medio)
                     if lt.size(medio_prueba["value"]) > mayor_numero:
                         mayor_numero = lt.size(medio_prueba["value"])
-                        mayor_medio = medio["key"]
+                        mayor_medio = medio
             
             mp.put(diccionario,"Mayor medio",mayor_medio)
 
             lt.addLast(lista,diccionario)
+        
+    shellsort.sort(lista,sort_artistas_prolificos)
+
+    if numero < lt.size(lista):
+        lista = lt.subList(lista,1,numero)
+    return lista
 
 
 
@@ -279,6 +290,16 @@ def sort_years_datetime(año1,año2):
 
 def sort_nationalities_by_artworks(nationality1,nationality2):
     if mp.get(nationality1,"Conteo")["value"] > mp.get(nationality2,"Conteo")["value"]:
+        return True
+    else:
+        return False
+
+def sort_artistas_prolificos(artista1,artista2):
+    if mp.get(artista1,"Total obras")["value"]>mp.get(artista2,"Total obras")["value"]:
+        return True
+    elif mp.get(artista1,"Total obras")["value"]==mp.get(artista2,"Total obras")["value"] and mp.get(artista1,"Numero de medios")["value"] > mp.get(artista2,"Numero de medios")["value"]:
+        return True
+    elif mp.get(artista1,"Total obras")["value"]==mp.get(artista2,"Total obras")["value"] and mp.get(artista1,"Numero de medios")["value"] == mp.get(artista2,"Numero de medios"):
         return True
     else:
         return False
