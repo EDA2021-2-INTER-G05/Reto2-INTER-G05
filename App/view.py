@@ -129,6 +129,7 @@ def printMenu():
     print("1- Listar cronnológicamente artistas")
     print("2- Listar cronológicamente las adquisiciones")
     print("4- Clasificar obras por nacionalidad de sus creadores")
+    print("6 - Encontrar los artistas más prolificos del museo")
 
 
 catalog = None
@@ -184,6 +185,20 @@ while True:
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print_numero_obras_nacionaliad(resultado,elapsed_time_mseg)
+
+    elif int(inputs[0]) == 6:
+        anio_i = int("Ingrese el año inicial: ")
+        anio_f = int("Ingrese el año final: ")
+        numero = int(input("Ingrese cúantos de los artístas más prolíficos desea ver: "))
+        print("Cargando información de los archivos...")
+        start_time = time.process_time()
+        resulado = controller.artistas_prolificos(catalog,anio_i,anio_f,numero)
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
+
+    
+
 
     else:
         sys.exit(0)

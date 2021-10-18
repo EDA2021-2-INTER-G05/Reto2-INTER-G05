@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.chaininghashtable import keySet
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -40,12 +41,12 @@ Se define la estructura de un catálogo de videos. El catálogo tendrá dos list
 los mismos.
 """
 def initCatalog():
-    catalog = mp.newMap(numelements=8)
-    mp.put(catalog,"Artists",mp.newMap(numelements=3))
+    catalog = mp.newMap(numelements=8,loadfactor=4)
+    mp.put(catalog,"Artists",mp.newMap(numelements=4))
     mp.put(mp.get(catalog,"Artists")["value"],"id",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artists")["value"],"Año",mp.newMap(maptype="CHAINING",loadfactor=4))
 
-    mp.put(catalog,"Artworks",mp.newMap(numelements=5))
+    mp.put(catalog,"Artworks",mp.newMap(numelements=5,loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Año_ad",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Nacionalidad",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Departamento",mp.newMap(maptype="CHAINING",loadfactor=4))
@@ -54,7 +55,7 @@ def initCatalog():
     return catalog
 
 def addArtist(catalog,artist):
-    artista = mp.newMap(numelements=8)
+    artista = mp.newMap(numelements=8,loadfactor=4)
     mp.put(artista,"Const_id",artist["ConstituentID"].strip())
     mp.put(artista,"Nombre",artist["DisplayName"])
     mp.put(artista,"Año",int(artist["BeginDate"]))
@@ -62,8 +63,12 @@ def addArtist(catalog,artist):
     mp.put(artista,"Fecha_falle",artist["EndDate"])
     mp.put(artista,"Genero",artist["Gender"])
 
+    mp.put(artista,"Obras",mp.newMap(2,loadfactor=4))
+    mp.put(mp.get(artista,"Obras")["value"],"Lista",lt.newList("ARRAY_LIST"))
+
     mp.put(mp.get(mp.get(catalog,"Artists")["value"],"id")["value"],mp.get(artista,"Const_id")["value"],artista)
     add_or_create_in_list(mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"],mp.get(artista,"Año")["value"],artista)
+    lt.addLast(mp.get(mp.get(catalog,"Artists")["value"],"Lista"),artista)
 
 
 def addArtwork(catalog,artwork):
@@ -97,7 +102,10 @@ def addArtwork(catalog,artwork):
         artista = mp.get(mp.get(mp.get(catalog,"Artists")["value"],"id")["value"],codigo)["value"]
         lt.addLast(mp.get(obra,"Artistas")["value"],artista)
         nacionalidad = mp.get(artista,"Nacionalidad")["value"]
+        lt.addLast(mp.get(mp.get(artista,"Obras")["value"],"Lista")["value"],obra)
+        add_or_create_in_list(mp.get(artista,"Obras")["value"],mp.get(obra,"Medio")["value"],obra)
         
+
         if lt.isPresent(nacionalidades,nacionalidad) == 0:
             lt.addLast(nacionalidades,nacionalidad)
             add_or_create_in_list(mp.get(mp.get(catalog,"Artworks")["value"],"Nacionalidad")["value"],nacionalidad,obra)
@@ -203,6 +211,42 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
                         conteo_compras += 1
             
     return lista_retorno,conteo_compras
+
+
+def artistas_prolificos(catalog,anio_i,anio_f,numero):
+    datos = mp.get(mp.get(catalog,"Artists")["value"],"Años")["value"]
+    años = mp.keySet(datos)
+
+    rango_años = lt.newList("ARRAY_LIST")
+    for año in lt.iterator(años):
+        if año <= anio_i and año >= anio_f:
+            lt.addLast(rango_años,año)
+
+    for año in lt.iterator(rango_años):
+        lista_año = mp.get(datos,año)["value"]
+
+        lista = lt.newList("ARRAY_LIST")
+        for artista in lt.iterator(lista_año):
+            diccionario = mp.newMap(5,loadfactor=4)
+            mp.put(diccionario,"Artista",artista)
+            mp.put(diccionario,"Total obras",lt.size(mp.get(mp.get(artista,"Obras")["value"],"Lista")["value"]))
+            mp.put(diccionario,"Numero de medios",lt.size(mp.get(artista,"Obras")["value"])-1)
+
+            medios = keySet(mp.get(artista,"Obras")["value"])
+            mayor_medio = None
+            mayor_numero = -1
+            for medio in lt.iterator(medios):
+                if medio != "Lista":
+                    medio_prueba = mp.get(mp.get(artista,"Obras")["value"],medio)
+                    if lt.size(medio_prueba["value"]) > mayor_numero:
+                        mayor_numero = lt.size(medio_prueba["value"])
+                        mayor_medio = medio["key"]
+            
+            mp.put(diccionario,"Mayor medio",mayor_medio)
+
+            lt.addLast(lista,diccionario)
+
+
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista

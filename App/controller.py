@@ -64,6 +64,10 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
     resultado = model.adquisiciones_cronologico(fecha_i,fecha_f,catalog)
     return resultado
 
+def artistas_prolificos(catalog,anio_i,anio_f,numero):
+    resultado = model.artistas_prolificos(catalog,anio_i,anio_f,numero)
+    return resultado
+
     
     
 
