@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from typing import List
 from prettytable import prettytable
 from prettytable.prettytable import ALL, HEADER
 import config as cf
@@ -131,9 +132,16 @@ def print_artistas_prolificos(resultado,tiempo):
     tabla2.field_names = ["Titulo","Fecha","Fecha adquisición","Medio","Departamento","Clasificación","Dimensiones"]
     mayor_medio = mp.get(lt.getElement(resultado,1),"Mayor medio")["value"]
     lista_obras = mp.get(mp.get(mp.get(lt.getElement(resultado,1),"Artista")["value"],"Obras")["value"],mayor_medio)["value"]
-    for i in range(1,6):
-        obra = lt.getElement(lista_obras,i)
-        tabla2.add_row([mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"],mp.get(obra,"Fecha_ad")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Departamento")["value"],mp.get(obra,"Clasificación")["value"],mp.get(obra,"Dimensiones")["value"]])
+    
+    if lt.size(lista_obras)<6:
+        for i in range(1,lt.size(lista_obras)+1):
+            obra = lt.getElement(lista_obras,i)
+            tabla2.add_row([mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"],mp.get(obra,"Fecha_ad")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Departamento")["value"],mp.get(obra,"Clasificación")["value"],mp.get(obra,"Dimensiones")["value"]])
+    else:
+
+        for i in range(1,6):
+            obra = lt.getElement(lista_obras,i)
+            tabla2.add_row([mp.get(obra,"Titulo")["value"],mp.get(obra,"Fecha")["value"],mp.get(obra,"Fecha_ad")["value"],mp.get(obra,"Medio")["value"],mp.get(obra,"Departamento")["value"],mp.get(obra,"Clasificación")["value"],mp.get(obra,"Dimensiones")["value"]])
     print("Las 5 primeras obras del medio más utilizado del artista más prolífico son las siguientes: ")
     tabla2.max_width = 25
     print(tabla2)
