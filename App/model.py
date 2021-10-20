@@ -47,7 +47,7 @@ def initCatalog():
     mp.put(mp.get(catalog,"Artists")["value"],"Año",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artists")["value"],"Nombres",mp.newMap(maptype="CHAINING",loadfactor=4))
 
-    mp.put(catalog,"Artworks",mp.newMap(numelements=5,loadfactor=4))
+    mp.put(catalog,"Artworks",mp.newMap(numelements=6,loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Año_ad",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Nacionalidad",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Departamento",mp.newMap(maptype="CHAINING",loadfactor=4))
@@ -119,6 +119,7 @@ def addArtwork(catalog,artwork):
 
     add_or_create_in_list(mp.get(mp.get(catalog,"Artworks")["value"],"Año_ad")["value"],mp.get(obra,"Fecha_ad")["value"].year,obra)
     add_or_create_in_list(mp.get(mp.get(catalog,"Artworks")["value"],"Medium")["value"],mp.get(obra,"Medio")["value"],obra)
+    add_or_create_in_list(mp.get(mp.get(catalog,"Artworks")["value"],"Departamento")["value"],mp.get(obra,"Departamento")["value"],obra)
     
 
 
