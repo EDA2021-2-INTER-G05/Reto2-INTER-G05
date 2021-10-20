@@ -45,6 +45,7 @@ def initCatalog():
     mp.put(catalog,"Artists",mp.newMap(numelements=4))
     mp.put(mp.get(catalog,"Artists")["value"],"id",mp.newMap(maptype="CHAINING",loadfactor=4))
     mp.put(mp.get(catalog,"Artists")["value"],"Año",mp.newMap(maptype="CHAINING",loadfactor=4))
+    mp.put(mp.get(catalog,"Artists")["value"],"Nombres",mp.newMap(maptype="CHAINING",loadfactor=4))
 
     mp.put(catalog,"Artworks",mp.newMap(numelements=5,loadfactor=4))
     mp.put(mp.get(catalog,"Artworks")["value"],"Año_ad",mp.newMap(maptype="CHAINING",loadfactor=4))
@@ -67,6 +68,7 @@ def addArtist(catalog,artist):
     mp.put(mp.get(artista,"Obras")["value"],"Lista",lt.newList("ARRAY_LIST"))
 
     mp.put(mp.get(mp.get(catalog,"Artists")["value"],"id")["value"],mp.get(artista,"Const_id")["value"],artista)
+    mp.put(mp.get(mp.get(catalog,"Artists")["value"],"Nombres")["value"],mp.get(artista,"Nombre")["value"],artista)
     add_or_create_in_list(mp.get(mp.get(catalog,"Artists")["value"],"Año")["value"],mp.get(artista,"Año")["value"],artista)
 
 
