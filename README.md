@@ -1,5 +1,6 @@
 #ISIS1225 - Librerias de soporte
 Nicolás Palacios - 202021759, n.palacios2
+Juan Sebastian Grillo - 202116631, j.grillop
 
 Este proyecto contiene los Tipos abstractos de datos, estructuras de datos y algoritmos requeridos por el curso ISIS1225-Estructuras de Datos y Algoritmos
 

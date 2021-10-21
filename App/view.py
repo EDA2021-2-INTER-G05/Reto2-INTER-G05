@@ -40,6 +40,7 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
+catalog2 = None
 def obtener_nombres_artistas(obra):
     artistas = mp.get(obra,"Artistas")["value"]
     lista = []
@@ -155,16 +156,25 @@ def initCatalog():
 def loadData(catalog):
     return controller.loadData(catalog)
 
+
 def printMenu():
     print("Bienvenido")
     print("0- Cargar información en el catálogo")
     print("1- Listar cronnológicamente artistas")
     print("2- Listar cronológicamente las adquisiciones")
+    print("3- clasificar tecnicas de un artista")
     print("4- Clasificar obras por nacionalidad de sus creadores")
+    print("5- transportar obras por departamento")
     print("6 - Encontrar los artistas más prolificos del museo")
 
+def initCatalog2():
+    return controller.initCatalog2()
+
+def loadData2(catalog2):
+    controller.loadData2(catalog2)
 
 catalog = None
+
 
 """
 Menu principal
@@ -176,7 +186,9 @@ while True:
         print("Cargando información de los archivos ....")
         start_time = time.process_time()
         catalog = initCatalog()
+        catalog2 = initCatalog2()
         loadData(catalog)
+        loadData2(catalog2)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print("Se han cargado los datos exitosamente.")
@@ -207,8 +219,30 @@ while True:
         elapsed_time_mseg = (stop_time - start_time)*1000
         printAdquisicionesCronologicas(resultado[0],resultado[1],elapsed_time_mseg)
 
-    elif int(inputs[0]) == 3:
-        print("Ya que estoy solo en el grupo este requerimiento no fue implementado")
+    elif int(inputs[0]) == 3: 
+        artist =  input("Ingrese artista a buscar: ")
+        start_time = time.process_time()
+        mas = controller.artista_medio(catalog2, artist)
+        size = mp.size(mas[1])
+        top = controller.med5(mas[1])
+        final = controller.llaves(top)
+        stop_time = time.process_time()
+        c = 0
+        while c < 10:
+            a = str(final[1]["elements"][c])
+            b = str(final[1]["elements"][c+1])
+            print(a.center(50)+"|"+b.center(9))
+            print("-"*60)
+            c+=2      
+        
+        a = str(final[1]["elements"][0])
+        med = controller.final(catalog2, mas[0],a) 
+        print("El tiempo de carga fue de:",str(elapsed_time_mseg), "s")
+        print(str(artist) + " con ID " + str(mas[0]) + " tiene  " + str(size) + " obras")      
+        print("Tiene 5" + str(final[0]) + " medios")
+        print("Medio".center(50)+"|"+"Obras".center(9))
+        print("-"*30)
+
 
     elif int(inputs[0]) == 4:
         print("Cargando información...")
@@ -218,6 +252,49 @@ while True:
         elapsed_time_mseg = (stop_time - start_time)*1000
         print_numero_obras_nacionaliad(resultado,elapsed_time_mseg)
 
+    elif int(inputs[0]) == 5:
+        department = input("Digite el departamento a evaluar: ")
+        start_time = time.process_time()
+        respuesta = controller.reglas_transporte(catalog2,department)
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print("El tiempo para cargar los archivos fue de:", str(elapsed_time_mseg) , "s") 
+        print ("Las medidas del departamento son " + str(respuesta[0]) + " obras.")
+        print ("El costo total es " + str(respuesta[1]) + "USD")
+        print("obras mas caras:")
+        print ("=" * 50)
+        for a in lt.iterator(respuesta[2]):
+            print("ID: " + a["ObjectID"])
+            print("titulo: " + a["Title"])
+            print("nombre: ")
+            F = a["ConstituentID"].split(",")
+            for artista in F: 
+                artista = artista.strip("[] ")
+                print(mp.get(catalog2["ConstituentName"], artista)["value"])
+            print("medio: " + a["Medium"])
+            print("fecha: " + a["Date"])
+            print("dimensiones: " + a["Dimensions"])
+            print("puesto: " + a["Classification"] )
+            print("Costo" + str(a["Costo"]))
+            print("url: " + a["URL"])
+            print ("=" * 50)
+        print ("obras mas antiguas: ")
+        print ("=" * 50)
+        for b in lt.iterator(respuesta[3]):
+            print("ID: " + b["ObjectID"])
+            print("Titulo: " + b["Title"])
+            print("nombre: ")
+            F = b["ConstituentID"].split(",")
+            for artista in F: 
+                artista = artista.strip("[] ")
+                print(mp.get(catalog2["ConstituentName"], artista)["value"])
+            print("medio: " + b["Medium"])
+            print("fecha: " + b["Date"])
+            print("dimensiones: " + b["Dimensions"])
+            print("puesto: " + b["Classification"] )
+            print("costo" + str(b["Costo"]))
+            print("url: " + b["URL"])
+            print ("=" * 50)
     elif int(inputs[0]) == 6:
         anio_i = int(input("Ingrese el año inicial: "))
         anio_f = int(input("Ingrese el año final: "))

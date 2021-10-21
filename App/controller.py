@@ -34,22 +34,47 @@ def initCatalog():
     catalog = model.initCatalog()
     return catalog
 
+def initCatalog2():
+    catalog2 = model.newCatalog2()
+    return catalog2
+
 def loadData(catalog):
     loadArtist(catalog)
     loadArtworks(catalog)
 
+def loadData2(catalog2):
+    loadArtist2(catalog2)
+    loadArtworks2(catalog2)
+
 def loadArtist(catalog):
 
-    Artistfile = cf.data_dir + 'Artists-utf8-large.csv'
+    Artistfile = cf.data_dir + 'Artists-utf8-small.csv'
     input_file = csv.DictReader(open(Artistfile, encoding='utf-8'))
     for Artist in input_file:
         model.addArtist(catalog, Artist)
 
+def loadArtist2(catalog2):
+
+    artistfile = cf.data_dir + 'Artists-utf8-50pct.csv'
+    input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
+    for artist in input_file:
+        model.ids(catalog2, artist)
+        model.name(catalog2, artist)
+
 def loadArtworks(catalog):
-    Artworks = cf.data_dir + 'Artworks-utf8-large.csv'
+    Artworks = cf.data_dir + 'Artworks-utf8-small.csv'
     input_file = csv.DictReader(open(Artworks, encoding='utf-8'))
     for Artwork in input_file:
         model.addArtwork(catalog, Artwork)
+        
+
+def loadArtworks2(catalog2):
+    artworks = cf.data_dir + 'Artworks-utf8-50pct.csv'
+    input_file = csv.DictReader(open(artworks, encoding='utf-8'))
+    for artwork in input_file:
+        model.addArtworks(catalog2, artwork)
+        model.medium(catalog2, artwork)
+        model.Department(catalog2, artwork)
 
 def artistas_cronologico(catalog,anio_i,anio_f):
 
@@ -67,6 +92,23 @@ def adquisiciones_cronologico(fecha_i,fecha_f,catalog):
 def artistas_prolificos(catalog,anio_i,anio_f,numero):
     resultado = model.artistas_prolificos(catalog,anio_i,anio_f,numero)
     return resultado
+
+
+def artista_medio(catalog2, artist):
+    return model.artista_medio(catalog2,artist)
+
+def med5(medios):
+    return model.med5(medios)
+
+def llaves(top):
+    return model.llaves(top)
+    
+def final(catalog2, id, med):
+    model.final(catalog2, id, med)  
+
+def reglas_transporte(catalog2,department):
+    return model.reglas_transporte(catalog2,department)
+
 
     
     
